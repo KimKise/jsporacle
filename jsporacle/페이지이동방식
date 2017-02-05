@@ -1,0 +1,15 @@
+*페이지 이동 방식
+	1. java 코드 방식
+		-. sendRedirect()
+			. 소량의 데이터 (GET 방식)
+			. response.sendRedirect("list.jsp?search=kim");
+			. 주소가 바뀜
+			. context path를 추가해야 함
+		-. forward()
+			. 대량의 데이터 전송이 가능
+			. 주소가 바뀌지 않음
+			. context path 생략(포함되어 있음) 
+			. request.setAttribute("map", map); => post방식으로 넘어감
+			. rd.forward("list.do?search=kim"); => 이런식으로 GET방식으로도 쓸 수 있다.
+	2. javascript 코드 방식
+		-. location.href="이동할 주소";

@@ -1,0 +1,34 @@
+*Cookie, Session
+	-. 웹프로그램은 기본적으로 현재 페이지에서 다른 페이지로 이동하면 현재 페이지에 저장된 값들이 모두 소멸
+	-. 다수의 페이지로 구성된 웹애플리케이션에서 사용자의 편의를 위해 인증 후의 값을 유지할 필요가 있음
+	-. 한번에 저장해서 모든 페이지에서 공유하자, 웹은 비연결성이기 때문에 
+	
+*   cookie					session
+	-. 클라이언트에 저장			서버에 저장, 서버의 성능 저하 주의
+	-. 보안취약				보안 우수
+	-. 변조 가능				변조x
+	-. 복잡한 코드 작성			쿠키보다 코드 작성 방법이 쉬움
+
+* 쿠키의 사용 방법
+	-. String Type만 가능, 특수문자 및 한글은 인코딩 해야함
+	-. 쿠키삭제
+		. 쿠키.setMaxAge(seconds)	: 쿠키의 유효기간을 초단위로 설정
+		. 쿠키.setMaxAge(0)		: 쿠키가 즉시 삭제됨
+		. 쿠키.setMaxAge(-1)		: 브라우저를 닫으면 쿠키가 삭제됨	
+
+* 세션의 사용 방법
+	-.세션 생성 및 수정
+		. session.setAttribute("세센변수명",세션값)
+		. 세션값에는 모든 Type을 저장할 수 있음, 특수문자/한글도 가능
+	-.세션 읽기
+		. session.getAttribute("세션변수명")
+	-.유효시간 설정
+		. 코드에 직접 설정 : session.setMaxInactiveInterval(초);
+		. web.xml에 설정(분) : 
+			<session-config>
+			<session-timeout>30</session-timeout>
+			</session-config>
+	-.세션 삭제
+		. 개별삭제 : session.removeAttribute("세션변수명");
+		. 전체삭제 : session.invalidate();
+	

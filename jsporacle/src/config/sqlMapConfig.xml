@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--XML 페이지의 첫라인은 건들면 안된다.  -->
+<!-- DOCTYPE 어떤 형식의 XML 페이지인지 알려줌  -->
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 알리아스 설정 -->
+	<typeAliases>
+		
+	</typeAliases>
+	<!-- db연결 참조코드 -->
+	<environments default="">
+		<environment id="">
+			<transactionManager type="JDBC" />
+			<dataSource type="JNDI">
+				<property name="data_source" 
+				value="java:comp/env/myDB" />
+			</dataSource>
+		</environment>
+	</environments>
+	<!-- 실제 sql query -->
+	<mappers>
+		<mapper resource="board/mapper/board.xml"/>
+	</mappers>
+</configuration>
+
+
+
+
+

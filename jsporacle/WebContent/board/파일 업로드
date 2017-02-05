@@ -1,0 +1,8 @@
+* jsp에는 파일업로드 기능이 없음, lib에 jar를 추가해야한다.
+
+* http://www.servlets.com/cos/
+cos.jar => WEB-INF/lib에 복사
+
+* 파일업로드
+1. 파일을 DB에 저장(blob 이라는 자료형으로 저장), Stream필요
+2. 파일을 디렉토리에 저장, 파일정보만 DB에 저장

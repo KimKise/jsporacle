@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+	<select id="list" resultType="board.dto.BoardDTO">
+	select * from (
+		select rownum as rn, A.*			
+			from (
+				select @RNUM:=@RNUM+1 as rownum, num, writer, subject, reg_date, readcount, filename, filesize, down, ref, re_step, re_level
+					, (select count(*) from board_comment where board_num= b.num) comment_count
+				from (select @RNUM:=0) R,  board b
+				order by ref desc, re_step asc
+			) A
+		) P
+	where rn between #{start} and #{end}
+	</select>
+	
+	<!--레코드 갯수  -->
+	<select id="count" resultType="int">
+		select count(*) from board
+	</select>
+	
+	
+	<select id="search_count" resultType="int">
+		select count(*) from board
+		<if test="search_option != 'all' ">
+			where ${search_option} like '%' #{keyword} '%'
+		</if>
+		<if test="search_option == 'all'">
+			where writer like '%' #{keyword} '%'
+				or subject like '%' #{keyword} '%'
+				or content like '%' #{keyword} '%'
+		</if>
+	</select>
+	
+	
+	<insert id="insert">
+	insert into board(num, writer, subject, passwd, ref, re_step, re_level, content, ip, filename, filesize)
+	values ( (select a.* from (select ifnull(max(num)+1,1) from board)a)
+			, #{writer}, #{subject}, #{passwd}
+			, (select a.* from (select ifnull(max(num)+1,1) from board)a)
+			, 1, 0, #{content}, #{ip}, #{filename}, #{filesize} )
+	</insert>
+	
+	<select id="view" resultType="board.dto.BoardDTO">
+		select * from board where num=#{num}
+	</select>
+	
+	<update id="plusReadCount">
+		update board set readcount = readcount + 1
+		where num=#{num}
+	</update>
+	
+	<!-- 댓글 목록  -->
+	<select id="commentList" resultType="board.dto.BoardCommentDTO">
+		select * from board_comment
+		where board_num=#{board_num}
+		order by comment_num	
+	</select>
+	
+	<insert id="commentAdd">
+		insert into board_comment (comment_num, board_num, writer, content)
+		values( (select a.* from (select ifnull(max(comment_num)+1,1) from board_comment)a)
+		, #{board_num}, #{writer}, #{content})
+	</insert>
+	
+	<!-- 첨부파일 이름 조회  -->
+	<select id="getFileName" resultType="String">
+		select filename from board where num=#{num}
+	</select>
+	
+	<!--다운로드 횟수 증가 처리  -->
+	<update id="plusDown">
+		update board set down = down+1 where num=#{num}
+	</update>
+	
+	<!--답변쓰기  -->
+	<insert id="reply">
+	insert into board(num, writer, subject, passwd, ref, re_step, re_level, content, ip, filename, filesize)
+	values ( (select a.* from (select ifnull(max(num)+1,1) from board)a)
+			, #{writer}, #{subject}, #{passwd}
+			, #{ref}, #{re_step}, #{re_level}
+			, #{content}, #{ip}, #{filename}, #{filesize} )
+	</insert>
+	
+	<!-- 답글의 순번 조정  -->
+	<update id="updateStep">
+		update board set re_step = re_step+1
+		where ref=#{ref} and re_step >= #{re_step}
+	</update>
+	
+	<!-- 비밀번호 확인  -->
+	<select id="pass_check" resultType="String">
+		select passwd from board
+		where num=#{num} and passwd=#{passwd}
+	</select>
+	
+	<!--게시물 수정  -->
+	<update id="update">
+		update board
+		set writer=#{writer}, subject=#{subject}, content=#{content}
+		, filename=#{filename}, filesize=#{filesize}, down=#{down}
+		where num=#{num}
+	</update>
+	
+	<!--게시물 검색  
+		샵{변수}	: 따옴표 포함
+		달러{변수}	: 따옴표 제거
+	-->
+	<select id="searchList" resultType="board.dto.BoardDTO">
+	select * from (
+		select rownum as rn, A.*			
+			from (
+				select @RNUM:=@RNUM+1 as rownum, num, writer, subject, reg_date, readcount, filename, filesize, down, ref, re_step, re_level, (select count(*) from board_comment where board_num= b.num) comment_count
+				from (select @RNUM:=0) R,  board b
+		<if test="search_option != 'all' ">
+			where ${search_option} like '%' #{keyword} '%'
+		</if>
+		<if test="search_option == 'all'">
+			where writer like '%' #{keyword} '%'
+				or subject like '%' #{keyword} '%'
+				or content like '%' #{keyword} '%'
+		</if>
+				order by ref desc, re_step asc
+			) A
+		) P
+	where rn between #{start} and #{end}
+	
+	<!--
+		select * from board
+		<choose>
+			<when test="search_option != 'all' ">
+				where ${search_option} like '%' #{keyword} '%'
+			</when>
+			<when test="search_option == 'all'">
+				where writer like '%' #{keyword} '%'
+				or subject like '%' #{keyword} '%'
+				or content like '%' #{keyword} '%'
+			</when>
+		</choose>
+	
+	  -->
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
